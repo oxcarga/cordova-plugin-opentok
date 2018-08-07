@@ -2,8 +2,8 @@ window.OT = {
   checkSystemRequirements: function() {
     return 1;
   },
-  initPublisher: function(one, two) {
-    return new TBPublisher(one, two);
+  initPublisher: function(one, two, three) {
+    return new TBPublisher(one, two, three);
   },
   initSession: function(apiKey, sessionId) {
     if (sessionId == null) {
@@ -321,13 +321,13 @@ var TBPublisher,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 TBPublisher = (function() {
-  function TBPublisher(one, two) {
+  function TBPublisher(one, two, three) {
     this.removePublisherElement = __bind(this.removePublisherElement, this);
     this.streamDestroyed = __bind(this.streamDestroyed, this);
     this.streamCreated = __bind(this.streamCreated, this);
     this.eventReceived = __bind(this.eventReceived, this);
     this.setSession = __bind(this.setSession, this);
-    var audioBitrate, audioFallbackEnabled, audioSource, cameraName, frameRate, height, insertMode, name, position, publishAudio, publishVideo, ratios, resolution, videoSource, width, zIndex, _ref, _ref1, _ref10, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+    var audioBitrate, audioFallbackEnabled, audioSource, cameraName, frameRate, height, insertMode, name, onError, onSuccess, position, publishAudio, publishVideo, ratios, resolution, videoSource, width, zIndex, _ref, _ref1, _ref10, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
     this.sanitizeInputs(one, two);
     pdebug("creating publisher", {});
     position = getPosition(this.pubElement);
@@ -384,7 +384,19 @@ TBPublisher = (function() {
     position = getPosition(this.pubElement);
     TBUpdateObjects();
     OT.getHelper().eventing(this);
-    Cordova.exec(TBSuccess, TBError, OTPlugin, "initPublisher", [name, position.top, position.left, width, height, zIndex, publishAudio, publishVideo, cameraName, ratios.widthRatio, ratios.heightRatio, audioFallbackEnabled, audioBitrate, audioSource, videoSource, frameRate, resolution]);
+    onSuccess = function(result) {
+      if ((three != null)) {
+        three(result);
+      }
+      return TBSuccess(result);
+    };
+    onError = function(result) {
+      if ((three != null)) {
+        three(result);
+      }
+      return TBError(result);
+    };
+    Cordova.exec(onSuccess, onError, OTPlugin, "initPublisher", [name, position.top, position.left, width, height, zIndex, publishAudio, publishVideo, cameraName, ratios.widthRatio, ratios.heightRatio, audioFallbackEnabled, audioBitrate, audioSource, videoSource, frameRate, resolution]);
     Cordova.exec(this.eventReceived, TBSuccess, OTPlugin, "addEvent", ["publisherEvents"]);
   }
 
